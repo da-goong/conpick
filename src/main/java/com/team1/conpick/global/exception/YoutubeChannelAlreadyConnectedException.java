@@ -1,7 +1,7 @@
 package com.team1.conpick.global.exception;
 
-public class YoutubeChannelNotFoundException extends RuntimeException {
-    public YoutubeChannelNotFoundException(String message) {
+public class YoutubeChannelAlreadyConnectedException extends RuntimeException {
+    public YoutubeChannelAlreadyConnectedException(String message) {
         super(message);
     }
 }

@@ -1,4 +1,4 @@
-package com.team1.conpick.youtube;
+package com.team1.conpick.youtube.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

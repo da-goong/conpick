@@ -3,15 +3,15 @@ package com.team1.conpick.auth;
 
 import com.team1.conpick.auth.jwt.RefreshToken;
 import com.team1.conpick.auth.jwt.RefreshTokenCookieFactory;
+import com.team1.conpick.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/auth")
@@ -38,4 +38,11 @@ public class AuthController {
                 .header(HttpHeaders.SET_COOKIE, cookieFactory.delete().toString())
                 .build();
     }
+
+    //유튜브 계정 관련
+//    @GetMapping("/youtube/connect")
+//    public ResponseEntity<Void> connect(@AuthenticationPrincipal Long userId){
+//
+//
+//    }
 }

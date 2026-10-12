@@ -32,7 +32,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/oauth2/**", "/login**", "/auth/refresh", "/auth/logout", "/error").permitAll()
+                        .requestMatchers("/oauth2/**", "/login**", "/auth/refresh", "/auth/logout", "/error", "/auth/youtube/callback", "/test/**").permitAll()
                         .anyRequest().authenticated())
                 .oauth2Login(oauth -> oauth.successHandler(oAuth2SuccessHandler))
                 .exceptionHandling(e -> e

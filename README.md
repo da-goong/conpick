@@ -45,3 +45,6 @@ JWT_SECRET=   # HS512용, 64바이트 이상
 
 - `main`: 배포 가능한 상태
 - `feature/*`: 기능 개발 후 PR로 `main`에 병합
+
+## 참고 문서
+- youtube API V3: https://developers.google.com/youtube/v3/guides/auth/server-side-web-apps?_gl=1*13mulgx*_up*MQ..*_ga*MTc3NjcxNzQ0OC4xNzkxNTY2NTI4*_ga_SM8HXJ53K2*czE3OTE1NjY1MjgkbzEkZzAkdDE3OTE1NjY1MjgkajYwJGwwJGgw&hl=ko

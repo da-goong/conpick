@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Table(name = "youtube_accounts")
-public class YoutubeAccounts {
+public class YoutubeAccount {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -41,7 +41,7 @@ public class YoutubeAccounts {
     private LocalDateTime connectedAt;
 
     @Builder
-    public YoutubeAccounts(User user, String channelId, String channelTitle, String thumbnailUrl, String accessToken, String refreshToken, LocalDateTime tokenExpiresAt){
+    public YoutubeAccount(User user, String channelId, String channelTitle, String thumbnailUrl, String accessToken, String refreshToken, LocalDateTime tokenExpiresAt){
         this.user = user;
         this.channelId = channelId;
         this.channelTitle = channelTitle;

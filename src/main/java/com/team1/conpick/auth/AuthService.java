@@ -3,6 +3,7 @@ package com.team1.conpick.auth;
 import com.team1.conpick.auth.jwt.JwtProvider;
 import com.team1.conpick.auth.jwt.RefreshToken;
 import com.team1.conpick.auth.jwt.RefreshTokenRepository;
+import com.team1.conpick.global.exception.InvalidRefreshTokenException;
 import com.team1.conpick.user.Provider;
 import com.team1.conpick.user.User;
 import com.team1.conpick.user.UserRepository;
