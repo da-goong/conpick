@@ -1,4 +1,4 @@
-package com.team1.conpick.data;
+package com.team1.conpick.data.collector;
 
 import com.team1.conpick.data.channel.ChannelStats;
 import com.team1.conpick.data.channel.ChannelStatsRepository;

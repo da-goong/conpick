@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Table(name = "comment_analyses")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class CommentAnalyses {
+public class CommentAnalysis {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -31,7 +31,7 @@ public class CommentAnalyses {
     private LocalDateTime analyzedAt;
 
     @Builder
-    public CommentAnalyses(Comment comment, Sentiment sentiment, String topic, Boolean isQuestion){
+    public CommentAnalysis(Comment comment, Sentiment sentiment, String topic, Boolean isQuestion){
         this.comment = comment;
         this.sentiment = sentiment;
         this.topic = topic;
@@ -40,7 +40,7 @@ public class CommentAnalyses {
     }
 
     //AI 재분석 시 덮어쓰기.
-    public void CommentAnalyses(Sentiment sentiment, String topic, Boolean isQuestion){
+    public void reanalyze(Sentiment sentiment, String topic, Boolean isQuestion){
         this.sentiment = sentiment;
         this.topic = topic;
         this.isQuestion = isQuestion;

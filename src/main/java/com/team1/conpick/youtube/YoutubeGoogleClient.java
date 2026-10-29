@@ -39,7 +39,7 @@ public class YoutubeGoogleClient {
     public YoutubeChannelResponse fetchMyChannel(String accessToken){
         return RestClient.create()
                 .get()
-                .uri("https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics&mine=true")
+                .uri("https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics,contentDetails&mine=true")
                 .header("Authorization", "Bearer " + accessToken)
                 .retrieve()
                 .body(YoutubeChannelResponse.class);
