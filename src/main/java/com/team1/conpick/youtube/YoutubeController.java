@@ -46,6 +46,7 @@ public class YoutubeController {
         }
     }
 
+    //배포 전에 지워야 함.
     @GetMapping("/test/youtube-url")
     public String test() {
         return youtubeService.createAuthorizationUrl(1L);

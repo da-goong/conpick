@@ -1,4 +1,4 @@
-package com.team1.conpick.data;
+package com.team1.conpick.data.channel;
 
 
 import com.team1.conpick.youtube.YoutubeAccount;
@@ -25,14 +25,14 @@ public class ChannelStats{
 
     private Long subscriberCount;
     private Long viewCount;
-    private Integer videoCount;
+    private Long videoCount;
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private LocalDateTime collectedAt;
 
     @Builder
-    public ChannelStats(YoutubeAccount youtubeAccount, Long subscriberCount, Long viewCount, Integer videoCount){
+    public ChannelStats(YoutubeAccount youtubeAccount, Long subscriberCount, Long viewCount, Long videoCount){
         this.youtubeAccount = youtubeAccount;
         this.subscriberCount = subscriberCount;
         this.viewCount = viewCount;
