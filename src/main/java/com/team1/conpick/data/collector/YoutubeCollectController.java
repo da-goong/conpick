@@ -26,14 +26,11 @@ public class YoutubeCollectController {
     @PostMapping("/collect")
     public ResponseEntity<Map<String, Integer>> collect(@AuthenticationPrincipal Long userId){
 
-        //1. 내 계정 목록 조회
         List<YoutubeAccount> youtubeAccountList = youtubeAccountRepository.findByUserId(userId);
 
-        //2. 성공/실패 개수 셀 변수 두 개(int, 0으로 시작)
         int success = 0;
         int fail = 0;
 
-        //3. for 문으로 계정 하나씩
         for (YoutubeAccount youtubeAccount : youtubeAccountList) {
             try{
                 youtubeCollector.collect(youtubeAccount);
@@ -43,7 +40,7 @@ public class YoutubeCollectController {
                 fail++;
             }
         }
-        //4. 결과를 응답으로 반환
+
         return ResponseEntity.ok(Map.of("success", success, "failed", fail));
     }
 }

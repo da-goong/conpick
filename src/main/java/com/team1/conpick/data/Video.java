@@ -7,7 +7,6 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
 import java.time.LocalDateTime;
 
 @Entity
@@ -51,6 +50,5 @@ public class Video {
         this.description = description;
         this.thumbnailUrl = thumbnailUrl;
     }
-
 
 }
