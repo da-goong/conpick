@@ -1,9 +1,6 @@
 package com.team1.conpick.youtube;
 
-import com.team1.conpick.youtube.dto.GoogleTokenResponse;
-import com.team1.conpick.youtube.dto.YoutubeChannelResponse;
-import com.team1.conpick.youtube.dto.YoutubePlaylistItemResponse;
-import com.team1.conpick.youtube.dto.YoutubeVideoResponse;
+import com.team1.conpick.youtube.dto.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -87,6 +84,15 @@ public class YoutubeGoogleClient {
                 .header("Authorization", "Bearer " + accessToken)
                 .retrieve()
                 .body(YoutubeVideoResponse.class);
+    }
+
+    public YoutubeCommentResponse fetchComments(String accessToken, String videoId){
+        return restClient
+                .get()
+                .uri("https://www.googleapis.com/youtube/v3/commentThreads" + "?part=snippet&videoId={videoId}&maxResults=100&textFormat=plainText&order=time", videoId)
+                .header("Authorization", "Bearer " + accessToken)
+                .retrieve()
+                .body(YoutubeCommentResponse.class);
     }
 
 

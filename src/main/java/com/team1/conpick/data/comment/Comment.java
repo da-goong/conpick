@@ -1,6 +1,7 @@
-package com.team1.conpick.data;
+package com.team1.conpick.data.comment;
 
 
+import com.team1.conpick.data.video.Video;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -34,11 +35,11 @@ public class Comment {
     @Column(columnDefinition = "TEXT")
     private String content;
 
-    private Integer likeCount;
+    private Long likeCount;
     private LocalDateTime publishedAt;
 
     @Builder
-    public Comment(Video video, String youtubeCommentId, String parentCommentId, String authorName, String authorChannelId, String content, Integer likeCount, LocalDateTime publishedAt){
+    public Comment(Video video, String youtubeCommentId, String parentCommentId, String authorName, String authorChannelId, String content, Long likeCount, LocalDateTime publishedAt){
         this.video = video;
         this.youtubeCommentId = youtubeCommentId;
         this.parentCommentId = parentCommentId;
@@ -50,7 +51,7 @@ public class Comment {
     }
 
     // 재수집 시 수정된 내용 좋아요 수 갱신
-    public void update(String content, Integer likeCount){
+    public void update(String content, Long likeCount){
         this.content = content;
         this.likeCount = likeCount;
     }

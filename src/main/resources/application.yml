@@ -33,5 +33,5 @@ app:
     client-id: ${GOOGLE_CLIENT_ID}
     client-secret: ${GOOGLE_CLIENT_SECRET}
     redirect-uri: http://localhost:8080/auth/youtube/callback
-    scope: https://www.googleapis.com/auth/youtube.readonly
+    scope: https://www.googleapis.com/auth/youtube.readonly https://www.googleapis.com/auth/youtube.force-ssl
     frontend-redirect-uri: http://localhost:3000/youtube/callback

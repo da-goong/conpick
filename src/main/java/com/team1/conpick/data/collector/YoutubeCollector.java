@@ -1,7 +1,9 @@
 package com.team1.conpick.data.collector;
 
-import com.team1.conpick.data.Video;
-import com.team1.conpick.data.VideoStats;
+import com.team1.conpick.data.comment.Comment;
+import com.team1.conpick.data.comment.CommentRepository;
+import com.team1.conpick.data.video.Video;
+import com.team1.conpick.data.video.VideoStats;
 import com.team1.conpick.data.channel.ChannelStats;
 import com.team1.conpick.data.channel.ChannelStatsRepository;
 import com.team1.conpick.data.video.VideoRepository;
@@ -11,12 +13,14 @@ import com.team1.conpick.youtube.YoutubeAccount;
 import com.team1.conpick.youtube.YoutubeGoogleClient;
 import com.team1.conpick.youtube.YoutubeService;
 import com.team1.conpick.youtube.dto.YoutubeChannelResponse;
+import com.team1.conpick.youtube.dto.YoutubeCommentResponse;
 import com.team1.conpick.youtube.dto.YoutubePlaylistItemResponse;
 import com.team1.conpick.youtube.dto.YoutubeVideoResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.time.*;
 import java.util.ArrayList;
@@ -33,6 +37,7 @@ public class YoutubeCollector {
     private final ChannelStatsRepository channelStatsRepository;
     private final VideoRepository videoRepository;
     private final VideoStatsRepository videoStatsRepository;
+    private final CommentRepository commentRepository;
 
     @Transactional
     public void collect(YoutubeAccount youtubeAccount){
@@ -83,11 +88,6 @@ public class YoutubeCollector {
 
         log.info("video ids ({}) = {}", videoIds.size(), videoIds);
 
-        //video API : 영상 상세 정보.
-        // 1. videoIds가 비어 있으면 videos API를 부르지 않기 (영상 0개 채널)
-        if (videoIds == null || videoIds.isEmpty()){
-            return;
-        }
 
         // 2. fetchVideos 호출 → 결과를 변수에 담기
        YoutubeVideoResponse youtubeVideoResponse = youtubeGoogleClient.fetchVideos(accessToken, videoIds);
@@ -101,28 +101,24 @@ public class YoutubeCollector {
         // 4. for문으로 영상마다 로그:
         for (YoutubeVideoResponse.Item videoItem : videoItems) {
             log.info("video id={}, title={}, views={}, publishedAt={}", videoItem.id(), videoItem.snippet().title(), toLong(videoItem.statistics().viewCount()) ,videoItem.snippet().publishedAt());
-            saveVideo(youtubeAccount, videoItem);
+            Video video = saveVideo(youtubeAccount, videoItem);
+            saveComments(accessToken, video);
         }
+
+
 
 
     }
 
-    private void saveVideo(YoutubeAccount youtubeAccount, YoutubeVideoResponse.Item videoItem){
-        // 1. snippet, statistics 꺼내서 변수에 담기
+    private Video saveVideo(YoutubeAccount youtubeAccount, YoutubeVideoResponse.Item videoItem){
         YoutubeVideoResponse.Snippet snippet= videoItem.snippet();
         YoutubeVideoResponse.Statistics statistics = videoItem.statistics();
 
-        // 2. 썸네일 url 고르기 (medium 추천, thumbnails가 null일 수 있음 주의)
         String thumbnailUrl = null;
         if(snippet.thumbnails() != null && snippet.thumbnails().medium() != null){
             thumbnailUrl = snippet.thumbnails().medium().url();
         }
 
-        // 3. upsert
-        //    - findByYoutubeVideoId로 찾기 → 결과를 변수에 담기
-        //    - 있으면: 꺼내서 recollect(...) 호출
-        //    - 없으면: Video.builder()...build() → save
-        //    - 어느 쪽이든 마지막에 Video video 변수에 담겨 있어야 함
         Optional<Video> found = videoRepository.findByYoutubeVideoId(videoItem.id());
 
         Video video;
@@ -153,8 +149,58 @@ public class YoutubeCollector {
 
 
         videoStatsRepository.save(videoStats);
+        return video;
         
     }
+
+
+    private void saveComments(String accessToken, Video video){
+
+        YoutubeCommentResponse response;
+        try{
+            response = youtubeGoogleClient.fetchComments(accessToken, video.getYoutubeVideoId());
+        } catch (HttpClientErrorException.Forbidden e){
+            if(e.getResponseBodyAsString().contains("commentsDisabled")) {
+                log.info("댓글 막힌 영상 건너뜀: {}", video.getTitle());
+                return;
+            }
+            throw e; //다른 403(숸한 부족 등)은 진짜 문제니까 디시 던짐.
+        }
+
+        List<YoutubeCommentResponse.Item> items = (response.items() == null) ? List.of() : response.items();
+
+        for (YoutubeCommentResponse.Item item : items) {
+            saveComment(video,item);
+        }
+    }
+
+    private void saveComment(Video video, YoutubeCommentResponse.Item item){
+        YoutubeCommentResponse.TopLevelComment top = item.snippet().topLevelComment();
+        YoutubeCommentResponse.CommentSnippet snippet = top.snippet();
+
+        // 작성자 채널 ID (탈퇴 계정이면 null일 수 있음)
+        String authorChannelId = null;
+        if (snippet.authorChannelId() != null){
+            authorChannelId = snippet.authorChannelId().value();
+        }
+
+        Optional<Comment> found = commentRepository.findByYoutubeCommentId(top.id());
+        if(found.isPresent()){
+            found.get().update(snippet.textOriginal(), snippet.likeCount());
+        } else {
+            Comment comment = Comment.builder()
+                    .video(video)
+                    .youtubeCommentId(top.id())
+                    .authorName(snippet.authorDisplayName())
+                    .authorChannelId(authorChannelId)
+                    .content(snippet.textOriginal())
+                    .likeCount(snippet.likeCount())
+                    .publishedAt(toLocalDateTime(snippet.publishedAt()))
+                    .build();
+            commentRepository.save(comment);
+        }
+    }
+
 
     private Long toLong(String value){
         return Optional.ofNullable(value).map(Long::valueOf).orElse(null);
