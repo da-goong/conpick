@@ -1,5 +1,6 @@
-package com.team1.conpick.data;
+package com.team1.conpick.data.comment;
 
+import com.team1.conpick.data.Sentiment;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;

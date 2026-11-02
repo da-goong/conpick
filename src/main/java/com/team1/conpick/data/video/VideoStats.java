@@ -1,4 +1,4 @@
-package com.team1.conpick.data;
+package com.team1.conpick.data.video;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
