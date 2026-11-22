@@ -54,7 +54,9 @@ public class YoutubeAccount {
 
     public void updateTokens(String accessToken, String refreshToken, LocalDateTime tokenExpiresAt){
         this.accessToken = accessToken;
-        this.refreshToken = refreshToken;
+        if (refreshToken != null){
+            this.refreshToken = refreshToken;
+        }
         this.tokenExpiresAt = tokenExpiresAt;
     }
 
