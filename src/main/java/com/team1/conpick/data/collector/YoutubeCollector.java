@@ -38,6 +38,7 @@ public class YoutubeCollector {
     private final VideoRepository videoRepository;
     private final VideoStatsRepository videoStatsRepository;
     private final CommentRepository commentRepository;
+    private static final long COMMENT_COLLECT_DAYS = 14;
 
     @Transactional
     public void collect(YoutubeAccount youtubeAccount){
@@ -99,10 +100,15 @@ public class YoutubeCollector {
         }
 
         // 4. for문으로 영상마다 로그:
+        LocalDateTime commentCutoff = LocalDateTime.now().minusDays(COMMENT_COLLECT_DAYS);
         for (YoutubeVideoResponse.Item videoItem : videoItems) {
             log.info("video id={}, title={}, views={}, publishedAt={}", videoItem.id(), videoItem.snippet().title(), toLong(videoItem.statistics().viewCount()) ,videoItem.snippet().publishedAt());
             Video video = saveVideo(youtubeAccount, videoItem);
-            saveComments(accessToken, video);
+            if (isCommentTarget(video, commentCutoff)){
+                saveComments(accessToken, video);
+            } else {
+                log.info("댓글 수집 대상 아님(14일 경과) : {}, publishedAt={}", video.getYoutubeVideoId(), video.getPublishedAt());
+            }
         }
 
 
@@ -210,5 +216,13 @@ public class YoutubeCollector {
         return Optional.ofNullable(value)
                 .map(v -> LocalDateTime.ofInstant(Instant.parse(v), ZoneId.of("Asia/Seoul")))
                 .orElse(null);
+    }
+
+    private boolean isCommentTarget(Video video, LocalDateTime cutoff){
+        LocalDateTime publishedAt = video.getPublishedAt();
+        if(publishedAt == null){
+            return false;
+        }
+        return publishedAt.isAfter(cutoff);
     }
 }
