@@ -89,7 +89,6 @@ public class YoutubeCollector {
 
         log.info("video ids ({}) = {}", videoIds.size(), videoIds);
 
-        videoIds.clear();
         if(videoIds.isEmpty()){
             log.info("계정 {}: 해당 채널에 비디오가 존재하지 않습니다.", youtubeAccount.getId());
             return;
