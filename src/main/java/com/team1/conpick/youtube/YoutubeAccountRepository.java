@@ -8,4 +8,5 @@ import java.util.Optional;
 public interface YoutubeAccountRepository extends JpaRepository<YoutubeAccount, Long> {
     Optional<YoutubeAccount> findByChannelId(String channelId);
     List<YoutubeAccount> findByUserId(Long userId);
+    Optional<YoutubeAccount> findByIdAndUser_Id(Long id, Long userId);
 }
