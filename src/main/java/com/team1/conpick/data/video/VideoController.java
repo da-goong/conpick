@@ -1,5 +1,6 @@
 package com.team1.conpick.data.video;
 
+import com.team1.conpick.data.comment.dto.CommentResponse;
 import com.team1.conpick.data.video.dto.VideoResponse;
 import com.team1.conpick.data.video.dto.VideoStatsResponse;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +36,15 @@ public class VideoController {
             @PathVariable Long videoId
     ){
         return videoService.getVideoStats(userId, videoId);
+    }
+
+    @GetMapping("/{videoId}/comment")
+    public Page<CommentResponse> getVideoComments(
+            @AuthenticationPrincipal Long userId,
+            @PathVariable Long videoId,
+            @PageableDefault(size = 20, sort = "publishedAt", direction = Sort.Direction.DESC) Pageable pageable
+    ){
+        return videoService.getVideoComments(userId, videoId, pageable);
     }
 
 }
