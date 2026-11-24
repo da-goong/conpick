@@ -9,4 +9,5 @@ import java.util.Optional;
 public interface VideoRepository extends JpaRepository<Video, Long> {
     Optional<Video> findByYoutubeVideoId(String youtubeVideoId);
     Page<Video> findByYoutubeAccount_User_Id(Long userId, Pageable pageable); //pageable을 맨 마지막 파라미터로 넣으면 스프링이 알아서 LIMIT/OFFSET/ORDER BY를 붙여줌.
+    Optional<Video> findByIdAndYoutubeAccount_User_Id(Long id, Long userId);
 }
