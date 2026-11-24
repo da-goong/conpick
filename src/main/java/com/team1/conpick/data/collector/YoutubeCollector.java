@@ -89,20 +89,23 @@ public class YoutubeCollector {
 
         log.info("video ids ({}) = {}", videoIds.size(), videoIds);
 
+        if(videoIds.isEmpty()){
+            log.info("계정 {}: 해당 채널에 비디오가 존재하지 않습니다.", youtubeAccount.getId());
+            return;
+        }
 
-        // 2. fetchVideos 호출 → 결과를 변수에 담기
+        //fetchVideos 호출 → 결과를 변수에 담기
        YoutubeVideoResponse youtubeVideoResponse = youtubeGoogleClient.fetchVideos(accessToken, videoIds);
 
-        // 3. items null 처리 (2-2와 같은 방식)
+        //items null 처리 (2-2와 같은 방식)
         List<YoutubeVideoResponse.Item> videoItems = youtubeVideoResponse.items();
         if(videoItems == null){
             videoItems = List.of();
         }
 
-        // 4. for문으로 영상마다 로그:
+        //영상 저장 + 최근 영상만 댓글 수집
         LocalDateTime commentCutoff = LocalDateTime.now().minusDays(COMMENT_COLLECT_DAYS);
         for (YoutubeVideoResponse.Item videoItem : videoItems) {
-            log.info("video id={}, title={}, views={}, publishedAt={}", videoItem.id(), videoItem.snippet().title(), toLong(videoItem.statistics().viewCount()) ,videoItem.snippet().publishedAt());
             Video video = saveVideo(youtubeAccount, videoItem);
             if (isCommentTarget(video, commentCutoff)){
                 saveComments(accessToken, video);
@@ -110,10 +113,6 @@ public class YoutubeCollector {
                 log.info("댓글 수집 대상 아님(14일 경과) : {}, publishedAt={}", video.getYoutubeVideoId(), video.getPublishedAt());
             }
         }
-
-
-
-
     }
 
     private Video saveVideo(YoutubeAccount youtubeAccount, YoutubeVideoResponse.Item videoItem){
@@ -144,6 +143,10 @@ public class YoutubeCollector {
             videoRepository.save(video);
         }
 
+        if (statistics == null){
+            log.info("statistics 없음, 영상 통계 저장 건너뜀: {}", video.getYoutubeVideoId());
+            return video;
+        }
         // 4. VideoStats insert
         //    - video를 넣어서 builder → save
         VideoStats videoStats = VideoStats.builder()
@@ -159,9 +162,7 @@ public class YoutubeCollector {
         
     }
 
-
     private void saveComments(String accessToken, Video video){
-
         YoutubeCommentResponse response;
         try{
             response = youtubeGoogleClient.fetchComments(accessToken, video.getYoutubeVideoId());
@@ -170,7 +171,7 @@ public class YoutubeCollector {
                 log.info("댓글 막힌 영상 건너뜀: {}", video.getTitle());
                 return;
             }
-            throw e; //다른 403(숸한 부족 등)은 진짜 문제니까 디시 던짐.
+            throw e; //다른 403(권한 부족 등)은 진짜 문제니까 다시 던짐.
         }
 
         List<YoutubeCommentResponse.Item> items = (response.items() == null) ? List.of() : response.items();
