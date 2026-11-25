@@ -10,7 +10,7 @@ spring:
             client-secret: ${GOOGLE_CLIENT_SECRET}
             scope: openid, profile, email
   datasource:
-    url: jdbc:mysql://localhost:3306/mydb
+    url: jdbc:mysql://${DB_HOST:localhost}:3306/mydb
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
   jpa:
@@ -19,7 +19,7 @@ spring:
     show-sql: true
   data:
     redis:
-      host: localhost
+      host: ${REDIS_HOST:localhost}
       port: 6379
 
 jwt:
