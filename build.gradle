@@ -52,6 +52,14 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 }
 
+//Gradle 기본 설정으로는 테스트 실패 이유를 콘솔에 안찍고 리포트파일(CI 서버 안에 있어서 볼 수 없음)에만 남김. 그래서 수정!
+//tasks.named('test') {
+//    useJUnitPlatform()
+//}
 tasks.named('test') {
     useJUnitPlatform()
+    testLogging {
+        events "failed"
+        exceptionFormat "full"
+    }
 }
