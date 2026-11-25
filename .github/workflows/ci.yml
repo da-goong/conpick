@@ -70,6 +70,9 @@ jobs:
       packages: write
 
     steps:
+      - name: 조건 값 확인 (디버깅용)
+        run: echo "event=${{ github.event_name }} ref=${{ github.ref_name }}"
+
       - name: 코드 내려받기
         uses: actions/checkout@v5
 
